@@ -82,7 +82,7 @@
   <!-- *=============================================================* -->
   
   <logger name="com.tibco.bw.test.log.some" additivity="false">
-    <level value="WARN"/>
+    <level value="DEBUG"/>
   </logger>
   <!-- Default Log activity logger -->
   <logger name="com.tibco.bw.palette.generalactivities.Log">
