@@ -81,7 +81,7 @@
   <!-- * LOGGER: BusinessWorks Palette and Activity loggers          * -->
   <!-- *=============================================================* -->
   
-  <logger name="com.tibco.bw.test.log.some" additivity="true">
+  <logger name="com.tibco.bw.test.log.some" additivity="false">
     <level value="WARN"/>
   </logger>
   <!-- Default Log activity logger -->
