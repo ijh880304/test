@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true">
+<configuration scan="true" scanPeriod="3 seconds" >
   
   <!-- *=============================================================* -->
   <!-- *  APPENDER: Console Appender                                 * -->
@@ -81,6 +81,9 @@
   <!-- * LOGGER: BusinessWorks Palette and Activity loggers          * -->
   <!-- *=============================================================* -->
   
+  <logger name="test.log.some">
+    <level value="DEBUG"/>
+  </logger>
   <!-- Default Log activity logger -->
   <logger name="com.tibco.bw.palette.generalactivities.Log">
     <level value="DEBUG"/>
