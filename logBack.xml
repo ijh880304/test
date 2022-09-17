@@ -184,7 +184,7 @@
   <!-- *=============================================================* -->
   <!-- * ROOT                                                        * -->
   <!-- *=============================================================* --> 
-  <root level="ERROR">
+  <root level="ERROR" name="someRootLogger">
     <if condition='property("BW_LOG_FORMAT").equalsIgnoreCase("Logstash JSON")'>
         <then>
           <appender-ref ref="LOGSTASH-JSON-STDOUT" />
