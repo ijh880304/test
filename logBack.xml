@@ -1,35 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true" scanPeriod="3 seconds" >
-  
+<configuration scan="true"  scanPeriod="3 seconds">
+
+  <conversionRule conversionWord="customLogger" converterClass="com.tibco.bw.extensions.logback.BWCustomConverter"/>  
   <!-- *=============================================================* -->
   <!-- *  APPENDER: Console Appender                                 * -->
   <!-- *=============================================================* -->  
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d{"yyyy-MM-dd'T'HH:mm:ss,SSS"} %-5level [%thread] %logger{36} - %msg%n</pattern>
+		<pattern>%d{"yyyy-MM-dd'T'HH:mm:ss,SSS"} %-5level [%thread] %customLogger{36} - %msg%n</pattern>
     </encoder>
   </appender>
 
-  <property name="BW_LOG_FORMAT" value="${BW_LOG_FORMAT}"/>
- 
-  <appender name="JSON-STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
-        <timestampFormat>yyyy-MM-dd'T'HH:mm:ss.SSSX</timestampFormat>
- 
-        <timestampFormatTimezoneId>Etc/UTC</timestampFormatTimezoneId>
-        <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
-          <prettyPrint>true</prettyPrint>
-        </jsonFormatter>
-      </layout>
-      </encoder>
+  
+  <!-- *=============================================================* -->
+  <!-- *  APPENDER: Application File Appender                        * -->
+  <!-- *=============================================================* -->  
+  <appender name="APPLICATION-FILE" class="ch.qos.logback.classic.sift.SiftingAppender">
+	<filter class="com.tibco.bw.extensions.logback.BWAppFileAppenderFilter"/>
+	<discriminator class="com.tibco.bw.extensions.logback.BWLoggerNameDiscriminator"/>
+	<sift>
+		<appender name="FILE-${fileName}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<file>../../../bw/6.5/logs/${fileName}.log</file>
+			
+			<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+				<fileNamePattern>../../../bw/6.5/logs/${fileName}%i.log</fileNamePattern>
+				<minIndex>1</minIndex>
+				<maxIndex>10</maxIndex>
+			</rollingPolicy>
+        
+			<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+				<maxFileSize>10MB</maxFileSize>
+			</triggeringPolicy>
+			
+			<encoder>
+				<pattern>%d{"yyyy-MM-dd'T'HH:mm:ss,SSS"} %-5level [%thread] %customLogger{36} - %msg%n</pattern>
+			</encoder>
+		</appender>
+	</sift>
   </appender>
- 
-  <appender name="LOGSTASH-JSON-STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-    </encoder>
-  </appender>  
+  
+  
+  <!-- *=============================================================* -->
+  <!-- * LOGGER: BusinessWorks Application logger                    * -->
+  <!-- *=============================================================* -->
+  <!-- Do not modify this logger-->
+  <logger name="BWApp">
+       <level value="ERROR"/>
+  </logger>
 
+  
   <!-- *=============================================================* -->
   <!-- * LOGGER: Thor Framework loggers                              * -->
   <!-- *=============================================================* -->
@@ -37,25 +56,13 @@
     <level value="INFO"/>
   </logger>
   
-  <!-- *=============================================================* -->
-  <!-- * LOGGER: Statistics loggers                              * -->
-  <!-- *=============================================================* -->
-  <logger name="com.tibco.bw.statistics.activity" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="STDOUT" />
-  </logger>
-
-  <!-- Process Execution Statistics -->
-  <logger name="com.tibco.bw.statistics.processinstance" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="STDOUT" />
-  </logger>
   
   
   <!-- *=============================================================* -->
   <!-- * LOGGER: BusinessWorks Framework loggers                     * -->
   <!-- *=============================================================* -->
   <logger name="com.tibco.bw.frwk">
+    <level value="WARN"/>
   </logger>  
   
   <logger name="com.tibco.bw.frwk.engine">
@@ -67,12 +74,19 @@
   <!-- * LOGGER: BusinessWorks Engine loggers                        * -->
   <!-- *=============================================================* --> 
   <logger name="com.tibco.bw.core">
+    <level value="WARN"/>
   </logger>
   
   <logger name="com.tibco.bx">
+    <level value="ERROR"/>
   </logger>
 
   <logger name="com.tibco.pvm">
+    <level value="ERROR"/>
+  </logger>
+  
+  <logger name="configuration.management.logger">
+    <level value="INFO"/>
   </logger>
   
   
@@ -82,14 +96,16 @@
   <!-- *=============================================================* -->
   
   <logger name="com.tibco.bw.test.log.some" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
   </logger>
   <!-- Default Log activity logger -->
   <logger name="com.tibco.bw.palette.generalactivities.Log">
     <level value="WARN"/>
+	<appender-ref ref="APPLICATION-FILE"/>
   </logger>
   
   <logger name="com.tibco.bw.palette">
+    <level value="ERROR"/>
   </logger>
 
   
@@ -100,10 +116,12 @@
   
   <!-- SOAP Binding logger -->
   <logger name="com.tibco.bw.binding.soap">
+    <level value="ERROR"/>
   </logger>
   
   <!-- REST Binding logger -->
   <logger name="com.tibco.bw.binding.rest">
+    <level value="ERROR"/>
   </logger>
   
   
@@ -112,6 +130,7 @@
   <!-- * LOGGER: BusinessWorks Shared Resource loggers               * -->
   <!-- *=============================================================* --> 
   <logger name="com.tibco.bw.sharedresource">
+    <level value="ERROR"/>
   </logger>
   
   
@@ -120,9 +139,11 @@
   <!-- * LOGGER: BusinessWorks Schema Cache loggers                  * -->
   <!-- *=============================================================* -->
   <logger name="com.tibco.bw.cache.runtime.xsd">
+    <level value="ERROR"/>
   </logger> 
   
   <logger name="com.tibco.bw.cache.runtime.wsdl">
+    <level value="ERROR"/>
   </logger> 
   
     
@@ -132,18 +153,22 @@
   <!-- *=============================================================* -->  
   <!-- Governance: Policy Director logger1 --> 
   <logger name="com.tibco.governance">
+    <level value="ERROR"/>
   </logger>
    
   <!-- Governance: Policy Director logger2 -->
   <logger name="com.tibco.governance.pa.action.runtime.PolicyProperties">
+    <level value="ERROR"/>
   </logger>
   
   <!-- Governance: SPM logger1 -->
   <logger name="com.tibco.governance.spm">
+    <level value="ERROR"/>
   </logger>
   
   <!-- Governance: SPM logger2 -->
   <logger name="rta.client">
+    <level value="ERROR"/>
   </logger>
   
   
@@ -152,9 +177,11 @@
   <!-- * LOGGER: BusinessWorks Miscellaneous Loggers                 * -->
   <!-- *=============================================================* --> 
   <logger name="com.tibco.bw.platformservices">
+    <level value="ERROR"/>
   </logger>
   
   <logger name="com.tibco.bw.core.runtime.statistics">
+    <level value="ERROR"/>
   </logger>
   
 
@@ -163,15 +190,19 @@
   <!-- * LOGGER: Other loggers                                       * -->
   <!-- *=============================================================* -->  
   <logger name="org.apache.axis2">
+    <level value="ERROR"/>
   </logger>
 
   <logger name="org.eclipse">
+    <level value="ERROR"/>
   </logger>
   
   <logger name="org.quartz">
+    <level value="ERROR"/>
   </logger>
   
   <logger name="org.apache.commons.httpclient.util.IdleConnectionHandler">
+    <level value="ERROR"/>
   </logger>
   
   
@@ -181,25 +212,16 @@
   <!-- *         configured in this section.                         * -->
   <!-- *=============================================================* -->
 
+     
+
+
+  
+  
   <!-- *=============================================================* -->
   <!-- * ROOT                                                        * -->
   <!-- *=============================================================* --> 
-  <root level="ERROR" name="someRootLogger2">
-    <if condition='property("BW_LOG_FORMAT").equalsIgnoreCase("Logstash JSON")'>
-        <then>
-          <appender-ref ref="LOGSTASH-JSON-STDOUT" />
-        </then>
-        <else>
-          <if condition='property("BW_LOG_FORMAT").equalsIgnoreCase("JSON")'>
-            <then>
-                <appender-ref ref="JSON-STDOUT" />
-            </then>
-            <else>
-                <appender-ref ref="STDOUT" />
-            </else>
-          </if>
-        </else>
-    </if>
+  <root level="ERROR">
+     <appender-ref ref="STDOUT" />
   </root>
   
 </configuration>
