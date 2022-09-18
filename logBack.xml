@@ -86,7 +86,7 @@
   </logger>
   <!-- Default Log activity logger -->
   <logger name="com.tibco.bw.palette.generalactivities.Log">
-    <level value="WARN"/>
+    <level value="INFO"/>
   </logger>
   
   <logger name="com.tibco.bw.palette">
